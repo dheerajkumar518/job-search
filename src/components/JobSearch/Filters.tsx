@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import DownArrow from "@/components/Icons/DownArrow";
+import SearchField from "@/components/JobSearch/SearchField";
 import { AppDispatch, RootState } from "@/store";
 import {
   getDataAPI,
+  setSearchText,
   setSelectedExperience,
   setSelectedRoles,
-  setSelectedSalary
+  setSelectedSalary,
 } from "@/store/slice/job-search.slice";
-import { experience, minSalary, roles } from "@/utils/functions";
+import { debounce, experience, minSalary, roles } from "@/utils/functions";
 import { Autocomplete, Stack, TextField } from "@mui/material";
 import { IconX } from "@tabler/icons-react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const Filters = () => {
@@ -25,6 +27,18 @@ const Filters = () => {
     dispatch(getDataAPI({ offset, limit: 15 }));
   }, [dispatch, selectedExperience, selectedRoles, selectedSalary]);
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedSearch(e.target.value);
+  };
+
+  const debouncedSearch = useCallback(
+    debounce((text: string) => {
+      dispatch(setSearchText(text));
+      dispatch(getDataAPI({ offset, limit: 15 }));
+    }, 500),
+    []
+  );
+
   return (
     <Stack
       width={"100%"}
@@ -33,7 +47,6 @@ const Filters = () => {
       flexDirection={"row"}
       flexWrap={"wrap"}
       alignItems={"flex-end"}
-      spacing={"15px"}
       gap={"10px"}
     >
       <Autocomplete
@@ -103,6 +116,7 @@ const Filters = () => {
         }}
         popupIcon={<DownArrow />}
       />
+      <SearchField onChange={handleSearch} />
     </Stack>
   );
 };

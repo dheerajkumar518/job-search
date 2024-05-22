@@ -6,17 +6,17 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 
-import { useCallback, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { ShowCode } from "@/components/Common/ShowCode";
 import { AppDispatch, RootState } from "@/store";
 import {
   getDataAPI,
   setLoading,
   setOpenDrawer,
 } from "@/store/slice/job-search.slice";
-import { ShowCode } from "@/components/Common/ShowCode";
-import JobCard from "./JobCard";
 import { useRouter } from "next/navigation";
+import { useCallback, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import JobCard from "./JobCard";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(relativeTime);
@@ -48,7 +48,12 @@ const JobList = () => {
   }
 
   return (
-    <Stack direction={"column"} spacing={"10px"}>
+    <Stack
+      height={"calc(100% - 100px)"}
+      overflow={"auto"}
+      direction={"column"}
+      spacing={"10px"}
+    >
       {jobs?.map((job, index) => (
         <Stack
           key={index}

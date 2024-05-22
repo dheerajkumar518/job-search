@@ -88,7 +88,7 @@ export const getDataAPI = createAsyncThunk(
     { limit = 15, offset = 0 }: { offset: number; limit: number },
     { getState }
   ) => {
-    const { selectedExperience, selectedRoles, selectedSalary } = (
+    const { selectedExperience, selectedRoles, selectedSalary, searchText } = (
       getState() as RootState
     ).jobs;
     const jobs = getSampleJdJSON();
@@ -100,8 +100,10 @@ export const getDataAPI = createAsyncThunk(
         !selectedExperience.length || selectedExperience.includes(job?.minExp);
       const salaryMatch =
         !selectedSalary.length || selectedSalary.includes(job?.minJdSalary);
-
-      return rolesMatch && experienceMatch && salaryMatch;
+      const searchMatch =
+        !job.companyName ||
+        job.companyName.toLowerCase().includes(searchText.toLowerCase());
+      return rolesMatch && experienceMatch && salaryMatch && searchMatch;
     });
     await delay(500);
     return {
