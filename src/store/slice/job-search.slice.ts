@@ -1,4 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "..";
+import { delay } from "../../utils/functions";
 import { JobDetailsType } from "../../utils/types";
 import { getSampleJdJSON } from "../data";
 
@@ -18,7 +20,7 @@ const initialState: JobState = {
   selectedExperience: [],
   selectedSalary: [],
   searchText: "",
-  isLoading: false,
+  isLoading: true,
   openDrawer: false,
 };
 
@@ -60,6 +62,13 @@ const jobSlice = createSlice({
       state.isLoading = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(getDataAPI.fulfilled, (state, action) => {
+      state.jobs = [...state.jobs, ...action.payload.data];
+      state.isLoading = false;
+      return state;
+    });
+  },
 });
 
 export const {
@@ -72,3 +81,32 @@ export const {
 } = jobSlice.actions;
 
 export default jobSlice.reducer;
+
+export const getDataAPI = createAsyncThunk(
+  "jobs/getDataAPI",
+  async (
+    { limit = 15, offset = 0 }: { offset: number; limit: number },
+    { getState }
+  ) => {
+    const { selectedExperience, selectedRoles, selectedSalary } = (
+      getState() as RootState
+    ).jobs;
+    const jobs = getSampleJdJSON();
+    const experienceFilterJobs = jobs.filter((job) => {
+      const rolesMatch =
+        !selectedRoles.length ||
+        selectedRoles.map((ele) => ele.toLowerCase()).includes(job.jobRole);
+      const experienceMatch =
+        !selectedExperience.length || selectedExperience.includes(job?.minExp);
+      const salaryMatch =
+        !selectedSalary.length || selectedSalary.includes(job?.minJdSalary);
+
+      return rolesMatch && experienceMatch && salaryMatch;
+    });
+    await delay(500);
+    return {
+      data: experienceFilterJobs.slice(offset, offset + limit),
+      total: experienceFilterJobs.length,
+    };
+  }
+);
