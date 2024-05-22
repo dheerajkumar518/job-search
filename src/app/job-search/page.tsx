@@ -1,7 +1,8 @@
+import JobSearch from "@/components/JobSearch";
 import React from "react";
 
 function JobSearchPage() {
-  return <div>JobSearchPage</div>;
+  return <JobSearch />;
 }
 
 export default JobSearchPage;
