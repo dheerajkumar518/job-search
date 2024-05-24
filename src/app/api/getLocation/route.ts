@@ -1,8 +1,6 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-/* eslint-disable no-console */
-
 export const POST = async (req: NextRequest) => {
   if (req.method !== "POST") {
     return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
@@ -24,5 +22,3 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
-
-export default POST;
